@@ -9,8 +9,8 @@
 <body>
 
 @include('layouts._header')
-
 <div class="offset-md-1 col-md-10">
+    @include('shared._message')
     @yield('content')
     @include('layouts._footer')
 </div>
