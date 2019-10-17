@@ -24,3 +24,7 @@ Route::get('/signup','UsersController@create')->name('signup');
 Route::get('/ceshi','StaticPagesController@ceshi');
 
 Route::resource('users','UsersController');
+
+Route::get('login','SessionsController@create')->name('login');
+Route::post('store','SessionsController@store')->name('store');
+Route::delete('logout','SessionsController@destory')->name('logout');
