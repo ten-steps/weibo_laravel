@@ -12,11 +12,16 @@ class UsersController extends Controller
     {
         $this->middleware('auth', [
             'except' => [
-                'create', 'store'
+                'create', 'store','index'
             ]
         ]);
     }
 
+    public function index()
+    {
+        $users = User::paginate(10);
+        return view('users.index',compact('users'));
+    }
     public function create()
     {
         return view('users.create');
@@ -67,5 +72,10 @@ class UsersController extends Controller
         $user->update($data);
         session()->flash('success', '个人资料更新成功');
         return redirect()->route('users.show', $user->id);
+    }
+
+    public function destroy ()
+    {
+
     }
 }
