@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class UsersController extends Controller
 {
@@ -12,7 +13,7 @@ class UsersController extends Controller
     {
         $this->middleware('auth', [
             'except' => [
-                'create', 'store','index'
+                'create', 'store', 'index', 'confirmEmail'
             ]
         ]);
     }
@@ -20,8 +21,9 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::paginate(10);
-        return view('users.index',compact('users'));
+        return view('users.index', compact('users'));
     }
+
     public function create()
     {
         return view('users.create');
@@ -46,14 +48,17 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        Auth::login($user);
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        return redirect()->route('users.show', [$user]);
+//        Auth::login($user);
+//        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
+//        return redirect()->route('users.show', [$user]);
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect('/');
     }
 
     public function edit(User $user)
     {
-        $this->authorize('update',$user);
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
@@ -74,10 +79,42 @@ class UsersController extends Controller
         return redirect()->route('users.show', $user->id);
     }
 
-    public function destroy (User $user)
+    public function destroy(User $user)
     {
         $user->delete();
-        session()->flash('success','删除成功');
+        session()->flash('success', '删除成功');
         return back();
     }
+
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+        $user->activated = true;
+        $user->activation_token = null;
+        $res = $user->save();
+        if ($res) {
+            Auth::login($user);
+            session()->flash('success', '恭喜你，激活成功！');
+        } else {
+            session()->flash('error', '抱歉激活失败,请重试');
+        }
+        return redirect()->route('users.show', [$user]);
+    }
+
+    private function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = '1085530400@qq.com';
+        $name = '十步';
+        $subject = '感谢注册 Weibo 应用！请确认你的邮箱。';
+        $to = $user->email;
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+        if (count(Mail::failures()) != 0){
+            session()->flash('error','抱歉邮件发送失败，点击<a href="'.route('sendEmail') .'">重新发送</a>');
+        }
+    }
+
 }

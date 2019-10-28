@@ -28,3 +28,8 @@ Route::resource('users','UsersController');
 Route::get('login','SessionsController@create')->name('login');
 Route::post('store','SessionsController@store')->name('store');
 Route::delete('logout','SessionsController@destory')->name('logout');
+Route::get('sendEmail','UsersController@sendEmailConfirmationTo')->name('sendEmail');
+Route::get('signup/confirm/{token}','UsersController@confirmEmail')->name('confirm_email');
+
+//密码相关操作
+Route::get('password/reset','Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.request');
