@@ -28,3 +28,11 @@ Route::resource('users','UsersController');
 Route::get('login','SessionsController@create')->name('login');
 Route::post('store','SessionsController@store')->name('store');
 Route::delete('logout','SessionsController@destory')->name('logout');
+Route::get('sendEmail','UsersController@sendEmailConfirmationTo')->name('sendEmail');
+Route::get('signup/confirm/{token}','UsersController@confirmEmail')->name('confirm_email');
+
+//密码相关操作
+Route::get('password/reset','Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+Route::post('password/email','Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}','Auth\ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset','Auth\ResetPasswordController@reset')->name('password.update');
