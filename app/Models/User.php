@@ -17,7 +17,7 @@ class User extends Authenticatable
      */
     protected  $table = 'users';
     protected $fillable = [
-        'name', 'email', 'password',
+       'name', 'email', 'password',
     ];
 
     /**
@@ -52,7 +52,7 @@ class User extends Authenticatable
         });
     }
 
-    public function status()
+    public function statuses()
     {
         return $this->hasMany(Status::class);
     }
