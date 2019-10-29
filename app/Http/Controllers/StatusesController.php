@@ -19,7 +19,7 @@ class StatusesController extends Controller
             'content' => 'required|max:140'
         ]);
 
-        Auth::user()->statuses()->create([
+        Auth::user()->status    ()->create([
             'content' => $request['content']
         ]);
         session()->flash('success', '发布成功！');
