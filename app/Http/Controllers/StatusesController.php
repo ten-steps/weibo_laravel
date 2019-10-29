@@ -19,10 +19,17 @@ class StatusesController extends Controller
             'content' => 'required|max:140'
         ]);
 
-        Auth::user()->status    ()->create([
+        Auth::user()->status()->create([
             'content' => $request['content']
         ]);
         session()->flash('success', '发布成功！');
         return redirect()->back();
+    }
+
+    public function destroy (Status $status)
+    {
+        $status->delete();
+        session()->flash('success', '微博已被成功删除！');
+        return redirect('/');
     }
 }
