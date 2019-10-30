@@ -135,4 +135,5 @@ class UsersController extends Controller
         $title =  $user->name . '的粉丝';
         return view('users.show_follow',compact('users','title'));
     }
+
 }
